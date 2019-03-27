@@ -1,6 +1,7 @@
 *.py[cod]
 
 # Packages
+*.log
 *.egg
 *.egg-info
 *.pem
@@ -61,6 +62,7 @@ input_data/
 output_data/
 results/
 Gsm/config
+metastore_db/
 
 test_features.py
 
