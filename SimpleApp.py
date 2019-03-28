@@ -11,6 +11,7 @@ print "Lines with a: %i, lines with b: %i" % (numAs, numBs)
 spark.stop()
 
 
+
 #TODO read in csvs to pyspark
 
 
