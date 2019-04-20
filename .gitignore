@@ -72,3 +72,4 @@ service_account.json
 
 .vscode/
 *.jar
+*.ini
