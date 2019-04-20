@@ -13,7 +13,6 @@ spark = SparkSession \
 sc = spark.sparkContext
 lines = sc.textFile("/Users/alexroussel/spark-2.3.1-bin-hadoop2.7/examples/src/main/resources/people.txt")
 parts = lines.map(lambda l: l.split(","))
-# people = parts.map(lambda p: Row(name=p[0], age=int(p[1])))
 people = parts.map(lambda p: (p[0], p[1].strip()))
 schemaString = "name age"
 fields = [StructField(field_name, StringType(), True) for field_name in schemaString.split()]
@@ -29,3 +28,17 @@ schemaPeople.write.format('jdbc').options(
             dbtable='test',
             user='airflow',
             password='airflow_password').mode('append').save()
+
+
+read_df = spark.read \
+    .format("jdbc") \
+    .option("url", "jdbc:mysql://localhost/airflow?characterEncoding=latin1&useSSL=false") \
+    .option("driver", "driver='com.mysql.jdbc.Driver'") \
+    .option("dbtable", "test") \
+    .option("user", "airflow") \
+    .option("password", "airflow_password") \
+    .load()
+
+read_df2 = spark.read \
+    .jdbc("jdbc:mysql://localhost/airflow", "airflow.test",
+          properties={"user": "airflow", "password": "airflow_password"})
