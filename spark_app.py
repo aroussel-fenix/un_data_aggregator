@@ -14,14 +14,15 @@ secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
 spark = SparkSession \
     .builder \
     .appName("PySpark ETL") \
-    .config("spark.hadoop.fs.s3.access.key", access_key_id) \
-    .config("spark.hadoop.fs.s3.secret.key", secret_access_key) \
-    .config("spark.hadoop.fs.s3.impl", "org.apache.hadoop.fs.s3native.NativeS3FileSystem") \
+    .config("spark.hadoop.fs.s3a.access.key", access_key_id) \
+    .config("spark.hadoop.fs.s3a.secret.key", secret_access_key) \
+    .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
     .getOrCreate()
 
 sc = spark.sparkContext
 
-rdd = sc.textFile("s3://aroussel-dev-bucket/medicare-office-locations.csv")
+rdd = sc.textFile("s3a://aroussel-dev-bucket/medicare-office-locations.csv")
+rdd.count()
 
 # TODO code below to read csv into relational DB
 # parts = lines.map(lambda l: l.split(","))
