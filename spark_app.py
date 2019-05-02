@@ -1,57 +1,30 @@
-from pyspark.sql import SparkSession, SQLContext
-from pyspark.sql.types import *
+from pyspark.sql import SQLContext
+from pyspark import SparkContext
 import os
+import logging
 from web_scraper.config import s3_settings  # this is only created by by init when this file is run.
 
-spark_path = '/Users/alexroussel/spark-2.3.1-bin-hadoop2.7'
-os.environ['SPARK_HOME'] = spark_path
-os.environ['HADOOP_HOME'] = spark_path
-os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages mysql:mysql-connector-java:8.0.11 pyspark-shell'
+os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages mysql:mysql-connector-java:8.0.11,' \
+                                    'com.amazonaws:aws-java-sdk:1.10.34,org.apache.hadoop:hadoop-aws:2.7.0 pyspark-shell'
 
 access_key_id = s3_settings.get('aws', 'aws_access_key_id')
 secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
 
-spark = SparkSession \
-    .builder \
-    .appName("PySpark ETL") \
-    .config("spark.hadoop.fs.s3a.access.key", access_key_id) \
-    .config("spark.hadoop.fs.s3a.secret.key", secret_access_key) \
-    .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-    .getOrCreate()
+sc = SparkContext.getOrCreate()
 
-sc = spark.sparkContext
+hadoopConf = sc._jsc.hadoopConfiguration()
+hadoopConf.set("fs.s3.impl", "org.apache.hadoop.fs.s3native.NativeS3FileSystem")
+hadoopConf.set("fs.s3.awsAccessKeyId", s3_settings.get('aws', 'aws_access_key_id'))
+hadoopConf.set("fs.s3.awsSecretAccessKey", s3_settings.get('aws', 'aws_secret_access_key'))
 
-rdd = sc.textFile("s3a://aroussel-dev-bucket/medicare-office-locations.csv")
-rdd.count()
+sqlContext = SQLContext(sc)
 
-# TODO code below to read csv into relational DB
-# parts = lines.map(lambda l: l.split(","))
-# people = parts.map(lambda p: (p[0], p[1].strip()))
-# schemaString = "name age"
-# fields = [StructField(field_name, StringType(), True) for field_name in schemaString.split()]
-# schema = StructType(fields)
-#
-# schemaPeople = spark.createDataFrame(people, schema)
+rdd = sqlContext.read.csv("s3://aroussel-dev-bucket/medicare-office-locations*", inferSchema=True, header=True)
 
-# CREATE TABLE needs to happen before data is written. It needs an empty table.
-
-# schemaPeople.write.format('jdbc').options(
-#             url='jdbc:mysql://localhost/airflow?characterEncoding=latin1&useSSL=false',
-#             driver='com.mysql.jdbc.Driver',
-#             dbtable='test',
-#             user='airflow',
-#             password='airflow_password').mode('append').save()
-#
-#
-# read_df = spark.read \
-#     .format("jdbc") \
-#     .option("url", "jdbc:mysql://localhost/airflow?characterEncoding=latin1&useSSL=false") \
-#     .option("driver", "driver='com.mysql.jdbc.Driver'") \
-#     .option("dbtable", "test") \
-#     .option("user", "airflow") \
-#     .option("password", "airflow_password") \
-#     .load()
-#
-# read_df2 = spark.read \
-#     .jdbc("jdbc:mysql://localhost/airflow", "airflow.test",
-#           properties={"user": "airflow", "password": "airflow_password"})
+rdd.write.format('jdbc').options(
+            url='jdbc:mysql://localhost/airflow?characterEncoding=latin1&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC',
+            driver='com.mysql.cj.jdbc.Driver',
+            dbtable='test',
+            user='airflow',
+            password='airflow_password').mode('append').save()
+logging.info("Done writing data to table...")
