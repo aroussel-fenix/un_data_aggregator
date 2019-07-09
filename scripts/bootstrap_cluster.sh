@@ -1,0 +1,1 @@
+aws s3 cp s3://aroussel-dev/code/un_data_aggregator/ ./un_data_aggregator/ --recursive

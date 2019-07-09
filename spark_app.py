@@ -2,7 +2,7 @@ from pyspark.sql import SQLContext
 from pyspark import SparkContext
 import os
 import logging
-from web_scraper.config import s3_settings  # this is only created by by init when this file is run.
+from web_scraper.config import s3_settings  # this is only created by init when this file is run.
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages mysql:mysql-connector-java:8.0.11,' \
                                     'com.amazonaws:aws-java-sdk:1.10.34,org.apache.hadoop:hadoop-aws:2.7.0 pyspark-shell'
@@ -19,7 +19,7 @@ hadoopConf.set("fs.s3.awsSecretAccessKey", s3_settings.get('aws', 'aws_secret_ac
 
 sqlContext = SQLContext(sc)
 
-rdd = sqlContext.read.csv("s3://aroussel-dev-bucket/medicare-office-locations*", inferSchema=True, header=True)
+rdd = sqlContext.read.csv("s3://aroussel-dev/medicare-office-locations*", inferSchema=True, header=True)
 
 rdd.write.format('jdbc').options(
             url='jdbc:mysql://localhost/airflow?characterEncoding=latin1&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC',

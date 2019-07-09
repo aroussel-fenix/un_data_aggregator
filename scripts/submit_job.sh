@@ -1,0 +1,6 @@
+# this script executes the aws create-cluster command
+
+# change this command to run a spark submit command from the zipped file in s3.
+aws emr create-cluster --bootstrap_actions [Path="s3://aroussel-dev/code/un_data_aggregator/bootstrap_cluster.sh"] --auto-scaling-role EMR_AutoScaling_DefaultRole --applications Name=Hadoop Name=Hive Name=Spark --ebs-root-volume-size 10 --ec2-attributes '{"KeyName":"emr_key_pair","InstanceProfile":"EMR_EC2_DefaultRole","SubnetId":"subnet-40343728","EmrManagedSlaveSecurityGroup":"sg-0156a6ecd05bbc7c7","EmrManagedMasterSecurityGroup":"sg-0dda41d97af3f5d14","AdditionalMasterSecurityGroups":["sg-0a8b9e41bd2d73d40"]}' --service-role EMR_DefaultRole --enable-debugging --release-label emr-5.24.0 --log-uri 's3n://aroussel-dev/emr_logs/' --name 'emr_lab' --instance-groups '[{"InstanceCount":1,"BidPrice":"0.020","EbsConfiguration":{"EbsBlockDeviceConfigs":[{"VolumeSpecification":{"SizeInGB":100,"VolumeType":"gp2"},"VolumesPerInstance":1}],"EbsOptimized":true},"InstanceGroupType":"MASTER","InstanceType":"m4.large","Name":"Master - 1"}]' --scale-down-behavior TERMINATE_AT_TASK_COMPLETION --region us-east-2
+
+aws emr add-steps --cluster-id j-13F3LSDEEPDU8 --steps Type=CUSTOM_JAR,Name="Spark Program",Jar="command-runner.jar",ActionOnFailure=CONTINUE,Args=[s3://aroussel-dev/code/un_data_aggregator/spark_app.py] --profile alex
