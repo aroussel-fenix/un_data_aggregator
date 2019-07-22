@@ -23,10 +23,6 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: print ls
-          command: ls
-
-      - run:
           name: create venv
           command: virtualenv venv
 
