@@ -27,8 +27,12 @@ jobs:
           command: ls
 
       - run:
+          name: create venv
+          command: virtualenv venv
+
+      - run:
           name: install dependencies
-          command: pip install -r requirements.txt
+          command: source venv/bin/activate && pip install -r requirements.txt
 
 #      - save_cache:
 #          paths:
