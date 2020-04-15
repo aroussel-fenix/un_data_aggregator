@@ -57,7 +57,7 @@ risk_score_env/
 log/
 logs/
 local/
-data/
+web_scraper/data/
 input_data/
 output_data/
 results/
