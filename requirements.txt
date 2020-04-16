@@ -1,5 +1,5 @@
-wget
 boto3
 wheel
 pandas
-pyspark>=2.3.2
+requests
+bs4

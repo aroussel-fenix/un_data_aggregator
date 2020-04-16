@@ -1,6 +1,7 @@
 import pandas as pd
 import boto3
-from config import s3_settings  # this is only created by by init when this file is run.
+# this is only created by init when this file is run.
+from config import s3_settings
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -9,11 +10,6 @@ import os
 import logging
 
 logging.basicConfig(level='INFO')
-
-# get AWS credentials and create s3 resource
-secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
-access_key_id = s3_settings.get('aws', 'aws_access_key_id')
-s3 = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
 
 
 def generate_valid_urls():
@@ -35,10 +31,11 @@ def generate_valid_urls():
     return result_list
 
 
-def download_to_s3(url):
+def download_to_s3(url, client):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
-    a = soup.find("a", class_="btn btn-empty btn-empty-blue hdx-btn resource-url-analytics ga-download")
+    a = soup.find(
+        "a", class_="btn btn-empty btn-empty-blue hdx-btn resource-url-analytics ga-download")
     b = a.get('href')
     url_root = "https://data.humdata.org"
     file_name = b.rsplit('/', 1)[1]
@@ -47,20 +44,21 @@ def download_to_s3(url):
     except ConnectionError:
         logging.error("CSV download failed.")
     else:
-        csv_df.to_csv('data/{}'.format(file_name))
+        csv_df.to_csv('/tmp/{}'.format(file_name))
     try:
-        s3.upload_file('data/{}'.format(file_name), 'aroussel-dev',
-                       'un_data/{}'.format(file_name))
+        client.upload_file('/tmp/{}'.format(file_name), 'aroussel-dev', 'un_data/{}'.format(file_name))
     except ConnectionError:
         logging.error("Upload to S3 failed.")
     else:
-        os.remove('data/{}'.format(file_name))
+        os.remove('/tmp/{}'.format(file_name))
 
 
 def lambda_handler(event, context):
-
+    # get AWS credentials and create s3 client
+    secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
+    access_key_id = s3_settings.get('aws', 'aws_access_key_id')
+    s3 = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
     valid_urls = generate_valid_urls()
-
-    download_to_s3(valid_urls[1])
-
+    for url in valid_urls:
+        download_to_s3(url, s3)
     return 0
