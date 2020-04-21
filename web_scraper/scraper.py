@@ -53,7 +53,7 @@ def download_to_s3(url, client):
         os.remove('/tmp/{}'.format(file_name))
 
 
-def lambda_handler(event, context):
+def run():
     # get AWS credentials and create s3 client
     secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
     access_key_id = s3_settings.get('aws', 'aws_access_key_id')
