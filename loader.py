@@ -1,7 +1,6 @@
 import pandas as pd
 import boto3
 from sqlalchemy import create_engine
-import sys
 import logging
 from acquire_data.config import s3_settings
 
