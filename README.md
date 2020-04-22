@@ -18,3 +18,11 @@ Process flow:
   - schedule periodic backups of Redshift cluter
   - add script to restore Redshift cluster from backup
  
+Note 22/4:
+- Initially tried writing to DynamoDB then realised that I was quickly exceeding the provisioned write capacity units
+  and it wasn't going to be sustainable to write all data to DynamoDB, especially doing batch writes. 
+- Therefore, will start by writing to RDS using SQL Alchemy.
+- Need to redo file upload to include the column headers otherwise will be a pain writing to db.
+
+Acknowledgement:
+- this project uses data assembled by ACLED, which is publicly available at https://acleddata.com/#/dashboard

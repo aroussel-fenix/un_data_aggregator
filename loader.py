@@ -1,29 +1,33 @@
 import pandas as pd
 import boto3
-import json
-from web_scraper.config import s3_settings
+from sqlalchemy import create_engine
+import sys
+import logging
+from acquire_data.config import s3_settings
 
-# take file (from s3 normally) but will test with local file and load into DynamoDB table.
+logging.basicConfig(level='INFO')
 
-# This should work in Lambda, using an S3 trigger to load each file into DynamoDB.
-
-# Build the connection to the DynamoDB table
 secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
 access_key_id = s3_settings.get('aws', 'aws_access_key_id')
-dynamo_db = boto3.resource('dynamodb', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key,
-                           region_name='us-east-2')
-table = dynamo_db.Table('conflict_data')
+s3 = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
 
-test_df = pd.read_csv('web_scraper/tmp/conflict_data_tun.csv', header=0)
-test_df_v2 = test_df.drop(test_df.index[0])
-for i in test_df_v2.columns:
-    test_df_v2[i] = test_df_v2[i].astype(str)
+# read in a single file as a test
+data = pd.read_csv('s3://aroussel-dev/un_data/conflict_data_abw.csv')
 
-# print(test_df_v2.transpose().to_dict().values())
+# move these connection params to a file
+db_connect_string = "{dialect}://{user}:{password}@{host}:{port}/{db}".format(
+                    dialect='mysql+pymysql',
+                    user='',
+                    password='',
+                    host='',
+                    port='3306',
+                    db='conflictdb')
+conflictdb_engine = create_engine(db_connect_string)
 
-test_json = test_df_v2.iloc[0].to_json()
-# test_json_v2 = test_df_v2[['data_id', 'timestamp']].iloc[0].to_json()
-test_json_v3 = json.loads(test_json)
-# print(test_json_v3.__sizeof__())
-with table.batch_writer() as batch:
-    batch.put_item(test_json_v3)
+to_drop = ['iso', 'event_id_cnty', 'event_id_no_cnty', 'year', 'time_precision', 'sub_event_type', 'actor1',
+        'assoc_actor_1', 'inter1', 'actor2', 'assoc_actor_2', 'inter2',
+        'interaction', 'region', 'admin1', 'admin2', 'admin3',
+        'location', 'geo_precision', 'source', 'source_scale', 'notes']
+data_v2 = data.drop(to_drop, axis=1)
+
+data_v2.to_sql('conflicts', conflictdb_engine, index=False, if_exists='append', chunksize=50)

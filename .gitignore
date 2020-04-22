@@ -57,7 +57,7 @@ risk_score_env/
 log/
 logs/
 local/
-web_scraper/tmp/
+acquire_data/tmp/
 input_data/
 output_data/
 results/

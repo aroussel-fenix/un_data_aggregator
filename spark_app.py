@@ -3,7 +3,7 @@ from pyspark import SparkContext
 from datetime import datetime
 import os
 import logging
-from web_scraper.config import s3_settings  # this is only created by init when this file is run.
+from acquire_data.config import s3_settings  # this is only created by init when this file is run.
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages mysql:mysql-connector-java:8.0.11,' \
                                     'com.amazonaws:aws-java-sdk:1.10.34,org.apache.hadoop:hadoop-aws:2.7.0 pyspark-shell'
