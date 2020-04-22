@@ -1,7 +1,7 @@
 import pandas as pd
 import boto3
 # this is only created by init when this file is run.
-from config import aws_settings
+from config import s3_settings
 import requests
 from bs4 import BeautifulSoup
 import json
