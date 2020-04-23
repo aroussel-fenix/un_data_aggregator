@@ -32,4 +32,4 @@ rdd.write.csv("s3://aroussel-dev/medicare-office-locations-output/%s" % (datetim
 #             dbtable='test',
 #             user='airflow',
 #             password='airflow_password').mode('append').save()
-# logging.info("Done writing tmp to table...")
+# logging.info("Done writing data to table...")

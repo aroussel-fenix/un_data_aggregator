@@ -8,6 +8,7 @@ import json
 import pickle
 import os
 import logging
+import wget
 
 logging.basicConfig(level='INFO')
 
@@ -39,18 +40,15 @@ def download_to_s3(url, client):
     b = a.get('href')
     url_root = "https://data.humdata.org"
     file_name = b.rsplit('/', 1)[1]
+
     try:
-        csv_df = pd.read_csv(url_root + b, header=2)
+        csv = wget.download(url_root + b, out='data/')
     except ConnectionError:
         logging.error("CSV download failed.")
-    else:
-        csv_df.to_csv('/tmp/{}'.format(file_name))
     try:
-        client.upload_file('/tmp/{}'.format(file_name), 'aroussel-dev', 'un_data/{}'.format(file_name))
+        client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'un_data/{}'.format(file_name))
     except ConnectionError:
         logging.error("Upload to S3 failed.")
-    else:
-        os.remove('/tmp/{}'.format(file_name))
 
 
 def run():
@@ -59,6 +57,8 @@ def run():
     access_key_id = s3_settings.get('aws', 'aws_access_key_id')
     s3 = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
     valid_urls = generate_valid_urls()
+    if not os.path.isdir('data'):
+        os.mkdir('data/')
     for url in valid_urls:
         download_to_s3(url, s3)
     return 0
