@@ -24,5 +24,9 @@ Note 22/4:
 - Therefore, will start by writing to RDS using SQL Alchemy.
 - Need to redo file upload to include the column headers otherwise will be a pain writing to db.
 
+Note 23/4:
+- Have set up a listener on S3 to trigger Lambda function when a csv is uploaded to S3. Will need to see
+  how Lambda handles multiple uploads per second. 
+
 Acknowledgement:
 - this project uses data assembled by ACLED, which is publicly available at https://acleddata.com/#/dashboard
