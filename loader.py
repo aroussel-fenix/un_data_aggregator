@@ -1,5 +1,4 @@
 import pandas as pd
-import boto3
 from sqlalchemy import create_engine
 import logging
 from acquire_data.config import s3_settings
@@ -7,10 +6,6 @@ from acquire_data.config import s3_settings
 logging.basicConfig(level='INFO')
 
 def lambda_handler(event, context):
-    secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
-    access_key_id = s3_settings.get('aws', 'aws_access_key_id')
-    s3 = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
-
     db_connect_string = "{dialect}://{user}:{password}@{host}:{port}/{db}".format(
                         dialect='mysql+pymysql',
                         user=s3_settings.get('conflictdb', 'user'),

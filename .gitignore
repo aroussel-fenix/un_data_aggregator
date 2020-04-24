@@ -43,28 +43,16 @@ lib64
 # Individual Connection Parameters
 connection_parameters.py
 
-# Yo api call
-*example_yo_api_call.txt
-
 # Installer logs
 pip-log.txt
 
-other/
 env/
 venv/
 venv
-risk_score_env/
 log/
 logs/
 local/
 acquire_data/data/
-input_data/
-output_data/
-results/
-Gsm/config
-metastore_db/
-
-test_features.py
 
 client_secret.json
 credentials.json
