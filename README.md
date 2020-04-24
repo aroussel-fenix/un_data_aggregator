@@ -6,9 +6,11 @@ them available via a RDBMS, API or data warehouse.
 
 Source: https://data.humdata.org/
 
-Output: Most likely Redshift cluster.
+**Current process flow:**
 
-Process flow:
+![Image of Process Flow](diagram.png)
+
+**Eventual desired process flow:**
   - run web scraper on EC2 instance and save data to S3 bucket
   - deploy zipped code to S3 bucket
   - launch an AWS EMR cluster to read code from S3 bucket
