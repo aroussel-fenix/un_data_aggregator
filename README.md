@@ -8,7 +8,7 @@ Source: https://data.humdata.org/
 
 **Current process flow:**
 
-![Image of Process Flow](diagram.png)
+![Image of Process Flow](diagram.PNG)
 
 **Eventual desired process flow:**
   - run web scraper on EC2 instance and save data to S3 bucket
