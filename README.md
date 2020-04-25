@@ -29,6 +29,10 @@ Note 22/4:
 Note 23/4:
 - Have set up a listener on S3 to trigger Lambda function when a csv is uploaded to S3. Will need to see
   how Lambda handles multiple uploads per second. 
+  
+Note 25/4:
+- After some struggle, realised that if my Lambda function is set to use the VPC that RDS is in, I need to create a
+  VPC endpoint for S3, otherwise Lambda won't be able to access it...
 
 Acknowledgement:
 - this project uses data assembled by ACLED, which is publicly available at https://acleddata.com/#/dashboard
