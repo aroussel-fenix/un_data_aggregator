@@ -18,7 +18,7 @@ def generate_valid_urls():
         with open("valid_urls.txt", "rb") as fp:
             result_list = pickle.load(fp)
     except FileNotFoundError:
-        print("File not found. Generating list from HDX URLs. This may take a few minutes.")
+        logging.warn("File not found. Generating list from HDX URLs. This may take a few minutes.")
         iso_dict = {}
         result_list = []
         with open('iso3.json') as json_file:
@@ -33,7 +33,6 @@ def generate_valid_urls():
 
 
 def download_to_s3(url, client, session):
-    # page = requests.get(url)
     page = session.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     a = soup.find(
@@ -54,10 +53,9 @@ def download_to_s3(url, client, session):
     elif os.path.isfile('data/{}'.format(file_name)):
         logging.info("{} already exists locally and was not downloaded".format(file_name))
     elif len(file_name) == 21:
-        logging.error("{} is not a valid file name and was not downloaded".format(file_name))
+        logging.warn("{} is not a valid file name and was not downloaded".format(file_name))
 
 def run():
-    # get AWS credentials and create s3 client
     secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
     access_key_id = s3_settings.get('aws', 'aws_access_key_id')
     logging.info("creating s3 client...")
