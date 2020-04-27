@@ -33,6 +33,12 @@ Note 23/4:
 Note 25/4:
 - After some struggle, realised that if my Lambda function is set to use the VPC that RDS is in, I need to create a
   VPC endpoint for S3, otherwise Lambda won't be able to access it...
+  
+Note 27/4:
+- Pipeline from EC2->S3->RDS has been automated
+- Lambda retries a failed attempt twice by default, so have set retries=0 and instead routes failures to an SQS queue
+  where they will be picked up later.
+- Failures are due to larger files exceeding the 128MB memory on a Lambda invocation. Will test with more memory.
 
 Acknowledgement:
 - this project uses data assembled by ACLED, which is publicly available at https://acleddata.com/#/dashboard
