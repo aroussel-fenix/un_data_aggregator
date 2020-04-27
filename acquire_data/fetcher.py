@@ -46,7 +46,7 @@ def download_to_s3(url, client):
     except ConnectionError:
         logging.error("CSV download failed.")
     try:
-        client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'un_data/{}'.format(file_name))
+        client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
     except ConnectionError:
         logging.error("Upload to S3 failed.")
 
