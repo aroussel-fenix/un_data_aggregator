@@ -65,7 +65,7 @@ def run():
     valid_urls = generate_valid_urls()
     if not os.path.isdir('data'):
         os.mkdir('data/')
-    logging.info("downloading files...")
     for url in valid_urls:
+        logging.info("downloading {}".format(url))
         download_to_s3(url, s3)
     return 0
