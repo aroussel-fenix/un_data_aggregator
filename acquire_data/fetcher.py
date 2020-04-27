@@ -41,17 +41,23 @@ def download_to_s3(url, client, session):
     url_root = "https://data.humdata.org"
     file_name = b.rsplit('/', 1)[1]
 
-    if len(file_name) == 21 and not os.path.isfile('data/{}'.format(file_name)):
-        csv = wget.download(url_root + b, out='data/')
+    if len(file_name) == 21:
+        # csv = wget.download(url_root + b, out='data/')
         try:
             obj = client.head_object(Bucket='aroussel-dev', Key='data/{}'.format(file_name))
             logging.info("{} already exists in s3. Not uploading.".format(file_name))
         except ClientError as exc:
             if exc.response['Error']['Code'] == '404':
-                logging.info("{} does not exist in s3. Uploading file.".format(file_name))
-                client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
-    elif os.path.isfile('data/{}'.format(file_name)):
-        logging.info("{} already exists locally and was not downloaded".format(file_name))
+                logging.info("{} does not exist in s3. Uploading to s3".format(file_name))
+                if os.path.isfile('data/{}'.format(file_name)):
+                    logging.info("{} exists locally, uploading to s3".format(file_name))
+                    client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
+                else:
+                    logging.info("{} does not exist locally, downloading then uploading to s3".format(file_name))
+                    csv = wget.download(url_root + b, out='data/')
+                    client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
+    # elif os.path.isfile('data/{}'.format(file_name)):
+    #     logging.info("{} already exists locally and was not downloaded".format(file_name))
     elif len(file_name) == 21:
         logging.warn("{} is not a valid file name and was not downloaded".format(file_name))
 
