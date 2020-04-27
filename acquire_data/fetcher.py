@@ -1,5 +1,5 @@
-import pandas as pd
 import boto3
+from botocore.exceptions import ClientError
 # this is only created by init when this file is run.
 from config import s3_settings
 import requests
@@ -41,24 +41,31 @@ def download_to_s3(url, client):
     url_root = "https://data.humdata.org"
     file_name = b.rsplit('/', 1)[1]
 
-    try:
+    if len(file_name) == 21 and not os.path.isfile('data/{}'.format(file_name)):
         csv = wget.download(url_root + b, out='data/')
-    except ConnectionError:
-        logging.error("CSV download failed.")
-    try:
-        client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
-    except ConnectionError:
-        logging.error("Upload to S3 failed.")
-
+        try:
+            obj = client.head_object(Bucket='aroussel-dev', Key='data/{}'.format(file_name))
+            logging.info("{} already exists in s3. Not uploading.".format(file_name))
+        except ClientError as exc:
+            if exc.response['Error']['Code'] == '404':
+                logging.info("{} does not exist in s3. Uploading file.".format(file_name))
+                client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
+    elif os.path.isfile('data/{}'.format(file_name)):
+        logging.info("{} already exists locally and was not downloaded".format(file_name))
+    elif len(file_name) == 21:
+        logging.error("{} is not a valid file name and was not downloaded".format(file_name))
 
 def run():
     # get AWS credentials and create s3 client
     secret_access_key = s3_settings.get('aws', 'aws_secret_access_key')
     access_key_id = s3_settings.get('aws', 'aws_access_key_id')
+    logging.info("creating s3 client...")
     s3 = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
+    logging.info("generating valid URLs...")
     valid_urls = generate_valid_urls()
     if not os.path.isdir('data'):
         os.mkdir('data/')
+    logging.info("downloading files...")
     for url in valid_urls:
         download_to_s3(url, s3)
     return 0
