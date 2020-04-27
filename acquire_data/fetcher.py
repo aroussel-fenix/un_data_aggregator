@@ -32,8 +32,9 @@ def generate_valid_urls():
     return result_list
 
 
-def download_to_s3(url, client):
-    page = requests.get(url)
+def download_to_s3(url, client, session):
+    # page = requests.get(url)
+    page = session.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     a = soup.find(
         "a", class_="btn btn-empty btn-empty-blue hdx-btn resource-url-analytics ga-download")
@@ -65,7 +66,8 @@ def run():
     valid_urls = generate_valid_urls()
     if not os.path.isdir('data'):
         os.mkdir('data/')
-    for url in valid_urls:
-        logging.info("downloading {}".format(url))
-        download_to_s3(url, s3)
+    with requests.Session() as my_session:
+        for url in valid_urls:
+            logging.info("downloading {}".format(url))
+            download_to_s3(url, s3, my_session)
     return 0
