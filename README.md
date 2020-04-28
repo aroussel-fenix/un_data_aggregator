@@ -40,5 +40,8 @@ Note 27/4:
   where they will be picked up later.
 - Failures are due to larger files exceeding the 128MB memory on a Lambda invocation. Will test with more memory.
 
+Note 28/4:
+- Upgrading Lambda memory appears to enough to process larger files (tested up to 33MB). 
+
 Acknowledgement:
 - this project uses data assembled by ACLED, which is publicly available at https://acleddata.com/#/dashboard
