@@ -5,6 +5,7 @@ from acquire_data.config import s3_settings
 
 logging.basicConfig(level='INFO')
 
+
 def lambda_handler(event, context):
     db_connect_string = "{dialect}://{user}:{password}@{host}:{port}/{db}".format(
                         dialect='mysql+pymysql',
@@ -19,7 +20,7 @@ def lambda_handler(event, context):
     updated_path = 's3://aroussel-dev/' + updated_file
     data = pd.read_csv(updated_path)
 
-    to_drop = ['iso', 'event_id_cnty', 'event_id_no_cnty', 'year', 'time_precision', 'sub_event_type', 'actor1',
+    to_drop = ['iso', 'event_id_no_cnty', 'year', 'time_precision', 'sub_event_type', 'actor1',
             'assoc_actor_1', 'inter1', 'actor2', 'assoc_actor_2', 'inter2',
             'interaction', 'region', 'admin1', 'admin2', 'admin3',
             'location', 'geo_precision', 'source', 'source_scale', 'notes']
