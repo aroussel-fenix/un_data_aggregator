@@ -38,13 +38,14 @@ def download_to_s3(url, client, session):
     full_url, file_name, latest_upload_date = get_page_info(url, session)
     if len(file_name) == 21:
         try:
-            obj = client.head_object(Bucket='aroussel-dev', Key='data/{}'.format(file_name))
+            obj = client.head_object(Bucket=s3_settings.get('aws', 'bucket'), Key='data/{}'.format(file_name))
             logging.info("{} already exists in s3. Checking to see if it is up to date.".format(file_name))
             last_s3_upload = obj['LastModified']
             if last_s3_upload < latest_upload_date:
                 logging.info("{} in s3 out of date, re-downloading and uploading".format(file_name))
                 csv = wget.download(full_url, out='data/')
-                client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
+                client.upload_file('data/{}'.format(file_name), s3_settings.get('aws', 'bucket'),
+                                   'data/{}'.format(file_name))
             else:
                 logging.info("{} in s3 up to date, no refresh needed".format(file_name))
         except ClientError as exc:
@@ -52,11 +53,13 @@ def download_to_s3(url, client, session):
                 logging.info("{} does not exist in s3. Uploading to s3".format(file_name))
                 if os.path.isfile('data/{}'.format(file_name)):
                     logging.info("{} exists locally, uploading to s3".format(file_name))
-                    client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
+                    client.upload_file('data/{}'.format(file_name), s3_settings.get('aws', 'bucket'),
+                                       'data/{}'.format(file_name))
                 else:
                     logging.info("{} does not exist locally, downloading then uploading to s3".format(file_name))
                     csv = wget.download(full_url, out='data/')
-                    client.upload_file('data/{}'.format(file_name), 'aroussel-dev', 'data/{}'.format(file_name))
+                    client.upload_file('data/{}'.format(file_name), s3_settings.get('aws', 'bucket'),
+                                       'data/{}'.format(file_name))
     elif len(file_name) == 21:
         logging.warning("{} is not a valid file name and was not downloaded".format(file_name))
 
@@ -91,7 +94,3 @@ def run():
             logging.info("checking URL: {}".format(url))
             download_to_s3(url, s3, my_session)
     return 0
-
-
-if __name__ == '__main__':
-    run()
