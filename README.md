@@ -43,5 +43,12 @@ Note 27/4:
 Note 28/4:
 - Upgrading Lambda memory appears to enough to process larger files (tested up to 33MB). 
 
+Note 29/4:
+- Used a temp table for writing updated data files to table as I noticed the data_id (which I assumed was unique
+  to a particular event record, can in fact change but still reference the same event, which would have introduced
+  unnecessary duplicates.
+- Solution for the moment is to specify event_id_cnty as the primary key and use INSERT IGNORE to write only new
+  records to the table, preserving the state of existing records in the table.
+
 Acknowledgement:
 - this project uses data assembled by ACLED, which is publicly available at https://acleddata.com/#/dashboard
