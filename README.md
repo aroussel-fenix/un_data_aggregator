@@ -6,6 +6,12 @@ them available via a RDBMS, API or data warehouse.
 
 Source: https://data.humdata.org/
 
+[Visualisation](https://aamsi.pythonanywhere.com/) of the data by [Aamsi](https://github.com/Aamsi) : 
+
+[![Aamsi's visualisation of the data](aamsi_map.png)](https://aamsi.pythonanywhere.com/)
+
+<a href="https://aamsi.pythonanywhere.com/"><img src="aamsi_map.png" alt="Aamsi visualisation of the data" width="240" height="180" border="10" /></a>
+
 **Current process flow:**
 
 ![Image of Process Flow](diagram.PNG)
@@ -19,36 +25,6 @@ Source: https://data.humdata.org/
   - run COPY command to write to Redshift data warehouse
   - schedule periodic backups of Redshift cluter
   - add script to restore Redshift cluster from backup
- 
-Note 22/4:
-- Initially tried writing to DynamoDB then realised that I was quickly exceeding the provisioned write capacity units
-  and it wasn't going to be sustainable to write all data to DynamoDB, especially doing batch writes. 
-- Therefore, will start by writing to RDS using SQL Alchemy.
-- Need to redo file upload to include the column headers otherwise will be a pain writing to db.
-
-Note 23/4:
-- Have set up a listener on S3 to trigger Lambda function when a csv is uploaded to S3. Will need to see
-  how Lambda handles multiple uploads per second. 
-  
-Note 25/4:
-- After some struggle, realised that if my Lambda function is set to use the VPC that RDS is in, I need to create a
-  VPC endpoint for S3, otherwise Lambda won't be able to access it...
-  
-Note 27/4:
-- Pipeline from EC2->S3->RDS has been automated
-- Lambda retries a failed attempt twice by default, so have set retries=0 and instead routes failures to an SQS queue
-  where they will be picked up later.
-- Failures are due to larger files exceeding the 128MB memory on a Lambda invocation. Will test with more memory.
-
-Note 28/4:
-- Upgrading Lambda memory appears to enough to process larger files (tested up to 33MB). 
-
-Note 29/4:
-- Used a temp table for writing updated data files to table as I noticed the data_id (which I assumed was unique
-  to a particular event record, can in fact change but still reference the same event, which would have introduced
-  unnecessary duplicates.
-- Solution for the moment is to specify event_id_cnty as the primary key and use INSERT IGNORE to write only new
-  records to the table, preserving the state of existing records in the table.
 
 Acknowledgement:
 - this project uses data assembled by ACLED, which is publicly available at https://acleddata.com/#/dashboard
