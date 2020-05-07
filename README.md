@@ -1,5 +1,5 @@
 # un_data_aggregator
-Repo using big data tech to find and aggregate open source humanitarian data.
+Repo using data engineering to find and aggregate open source humanitarian data.
 
 The idea behind this project is to bring humanitarian data files into a data pipeline, aggregate them, and make
 them available via a RDBMS, API or data warehouse.
@@ -9,8 +9,6 @@ Source: https://data.humdata.org/
 [Visualisation](https://aamsi.pythonanywhere.com/) of the data by [Aamsi](https://github.com/Aamsi) : 
 
 [![Aamsi's visualisation of the data](aamsi_map.png)](https://aamsi.pythonanywhere.com/)
-
-<a href="https://aamsi.pythonanywhere.com/"><img src="aamsi_map.png" alt="Aamsi visualisation of the data" width="240" height="180" border="10" /></a>
 
 **Current process flow:**
 
