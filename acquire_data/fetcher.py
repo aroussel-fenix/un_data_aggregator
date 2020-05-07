@@ -4,8 +4,6 @@ from botocore.exceptions import ClientError
 from config import s3_settings
 import requests
 from bs4 import BeautifulSoup
-import json
-import pickle
 import os
 import logging
 import wget
@@ -17,20 +15,18 @@ logging.basicConfig(level='INFO')
 
 def generate_valid_urls():
     try:
-        with open("valid_urls.txt", "rb") as fp:
-            result_list = pickle.load(fp)
+        with open('valid_urls.txt', 'r') as f:
+            result_list = f.read().splitlines()
     except FileNotFoundError:
-        logging.warning("File not found. Generating list from HDX URLs. This may take a few minutes.")
-        iso_dict = {}
+        print("File not found. Generating list from HDX URLs.")
+        page = requests.get('https://data.humdata.org/search?organization=acled&q=&ext_page_size=200')
+        soup = BeautifulSoup(page.content, 'html.parser')
         result_list = []
-        with open('iso3.json') as json_file:
-            iso_list = json.load(json_file)
-        for i in iso_list:
-            iso_dict.update({i['name']: i['iso3']})
-        parent_url_root = 'https://data.humdata.org/dataset/acled-data-for-'
-        for x in iso_dict.keys():
-            if requests.head(parent_url_root + x).status_code == 200:
-                result_list.append(parent_url_root + x)
+        url_root = "https://data.humdata.org"
+        with open('valid_urls.txt', 'w') as f:
+            for a in soup.find_all("div", class_="dataset-heading"):
+                result_list.append(url_root + a.find("a").get('href'))
+                f.write("%s\n" % (url_root + a.find("a").get('href')))
     return result_list
 
 
