@@ -13,6 +13,9 @@ wget = "*"
 pytz = "*"
 
 [dev-packages]
+flake8 = "*"
+isort = "*"
+black = {git = "git://github.com/psf/black"}
 
 [requires]
 python_version = "3.8"
