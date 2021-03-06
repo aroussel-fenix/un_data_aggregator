@@ -2,12 +2,8 @@ FROM python:3.6.10-slim-buster
 
 WORKDIR /src/
 
-COPY ./requirements.txt ./requirements.txt
+COPY . .
 
-RUN pip install -r requirements.txt
+RUN pipenv install
 
-COPY ./acquire_data ./acquire_data
-
-WORKDIR /src/acquire_data/
-
-CMD [ "python", "-c", "import fetcher; fetcher.run()" ]
+CMD [ "python", "-c", "from acquire_data.fetcher import Fetcher; Fetcher().run()" ]
