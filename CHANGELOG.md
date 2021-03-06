@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+#####2021-03-06
+Changed
+- Overhaul of project structure and direction. I'd rather focus on getting a distributed solution working locally,
+then move it to the cloud
+- I'm also in the process of refactoring the code to adhere more closely to OOP.
+- See [board](https://github.com/aroussel-data/un_data_aggregator/projects/2) for more details.
+
 #####2020-04-29
 Added
 - Use of temp table for writing updated data files to table as data_id (which I assumed was unique
