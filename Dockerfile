@@ -1,9 +1,11 @@
-FROM python:3.6.10-slim-buster
+FROM python:3.8-slim
 
 WORKDIR /src/
 
 COPY . .
 
-RUN pipenv install
+RUN pip install pipenv \
+        && pipenv install \
+        && pipenv shell
 
 CMD [ "python", "-c", "from acquire_data.fetcher import Fetcher; Fetcher().run()" ]
