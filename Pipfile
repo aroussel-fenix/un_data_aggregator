@@ -11,6 +11,7 @@ SQLAlchemy = "*"
 PyMySQL = "*"
 wget = "*"
 pytz = "*"
+urllib3 = "*"
 
 [dev-packages]
 flake8 = "*"
