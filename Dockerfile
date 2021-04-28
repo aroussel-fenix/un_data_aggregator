@@ -4,8 +4,8 @@ WORKDIR /src/
 
 COPY . .
 
-RUN pip install pipenv \
-        && pipenv install \
-        && pipenv shell
+RUN apt-get update \ 
+        && apt-get --no-install-recommends --no-install-suggests --yes --quiet install pipenv \
+        && pipenv install
 
-CMD [ "python", "-c", "from acquire_data.fetcher import Fetcher; Fetcher().run()" ]
+CMD [ "pipenv" "run" "python", "-c", "from acquire_data.fetcher import Fetcher; Fetcher().run()" ]
