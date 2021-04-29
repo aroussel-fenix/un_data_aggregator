@@ -1,13 +1,11 @@
-FROM python:3.6.10-slim-buster
+FROM python:3.8-slim
 
 WORKDIR /src/
 
-COPY ./requirements.txt ./requirements.txt
+COPY . .
 
-RUN pip install -r requirements.txt
+RUN apt-get update \ 
+        && apt-get --no-install-recommends --no-install-suggests --yes --quiet install pipenv
+RUN pipenv install
 
-COPY ./acquire_data ./acquire_data
-
-WORKDIR /src/acquire_data/
-
-CMD [ "python", "-c", "import fetcher; fetcher.run()" ]
+CMD pipenv run python -c "from acquire_data.fetcher import Fetcher; Fetcher().run()"
