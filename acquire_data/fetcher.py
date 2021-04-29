@@ -14,7 +14,7 @@ class Fetcher:
     def __init__(self):
         self.session = requests.Session()
         self.target_url = self._construct_url()
-        self.filepath = f"data/{datetime.today().strftime('%Y-%m-%d')}-data.json"
+        self.filepath = f"acquire_data/data/{datetime.today().strftime('%Y-%m-%d')}-data.json"
 
     def _construct_url(self):
         result_url = settings.get("url", "base_url")
