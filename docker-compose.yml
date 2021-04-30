@@ -16,6 +16,7 @@ services:
       build:
         dockerfile: Dockerfile
         context: .
+      command: tail -F anything
       logging:
         options:
           max-size: 10m
