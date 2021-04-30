@@ -4,7 +4,7 @@ Repo using data engineering to find and aggregate open source humanitarian data.
 The idea behind this project is to bring humanitarian data files into a data pipeline, aggregate them, and make
 them available via a RDBMS, API or data warehouse.
 
-Source: https://data.humdata.org/
+Source: https://acleddata.com/#/dashboard
 
 [Visualisation](https://aamsi.pythonanywhere.com/) of the data by [Aamsi](https://github.com/Aamsi) : 
 
