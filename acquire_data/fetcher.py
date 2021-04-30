@@ -33,7 +33,7 @@ class Fetcher:
         else:
             logging.info(f"{self.filepath} already in data folder")
 
-    def _load_files_into_db(self):
+    def _load_file_into_db(self):
         pass
 
     def run(self):
